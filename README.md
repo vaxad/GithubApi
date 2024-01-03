@@ -8,7 +8,7 @@ Welcome to the GitHub Scraper! This project is designed to scrape information ab
 1. Clone the repository to your local machine:
 
     ```bash
-    git clone https://github.com/vaxad/GitScraper.git
+    git clone https://github.com/vaxad/GithubApi.git
     ```
 
 2. Install the required dependencies:
