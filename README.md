@@ -63,7 +63,7 @@ The server will be live at `http://localhost:4000`.
 - ***Note***: You may need to change the code in order for it to work for you.
 ## Deployed Instance
 
-This GitHub Scraper is deployed and accessible on [Render](https://portfolio-server-am21.onrender.com).
+This GitHub Scraper is deployed and accessible on [Live server](https://vaxad.vercel.app/api/github).
 
 ## Frontend Integration
 
