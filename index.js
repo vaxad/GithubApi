@@ -11,6 +11,7 @@ app.get("/", (req, res) => {
     res.send('server is live')
 })
 app.use('/mail', require('./routes/mail'))
+app.use('/github', require('./routes/github'))
 const port=4000
 const server = app.listen(port, () => {
     console.log('server up at '+port)
