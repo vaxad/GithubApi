@@ -20,14 +20,14 @@ Welcome to the GitHub Scraper! This project is designed to scrape information ab
 3. Set up your MongoDB connection by creating a `.env` file in the project root with the following format:
 
     ```plaintext
-    MONGODB_URI=your_mongodb_uri
-    USERNAME=your_username
+    MONGO=your_mongodb_uri
+    GITHUB_USERNAME=your_username
     ```
 
 4. Run the server:
 
     ```bash
-    npm run server
+    npm run dev
     ```
 
 The server will be live at `http://localhost:4000`.
@@ -39,17 +39,20 @@ The server will be live at `http://localhost:4000`.
 - **Description:** Check if the server is live.
 - **Example:** `http://localhost:4000/`
 
-### 2. `GET /github`
+### 2. `GET /github/repo/:user/:repo`
 
-- **Description:** Scrape GitHub repositories from a user's profile and categorize them into web, server, and app projects.
-- **Example:** `http://localhost:4000/github`
+- **Description:** Scrape GitHub repositories from any user's profile.
+- **Parameters:**
+  - `user`: The username of the GitHub repository's owner.
+  - `repo`: The name of the GitHub repository.
+- **Example:** `http://localhost:4000/github/repo/vaxad/GithubApi`
 
 ### 3. `GET /github/repo/:name`
 
-- **Description:** Get detailed information about a specific GitHub repository.
+- **Description:** Get detailed information about a specific GitHub repository owned by yourself(Github username mentioned in .env).
 - **Parameters:**
   - `name`: The name of the GitHub repository.
-- **Example:** `http://localhost:4000/github/repo/:name`
+- **Example:** `http://localhost:4000/github/repo/your-repo-name`
 
 ### 4. `GET /github/all`
 
@@ -58,7 +61,7 @@ The server will be live at `http://localhost:4000`.
 
 ## Usage
 - Star the repositories you want to fetch in a list.
-- For example, make a list named _Frontend_ and add all ypur frontend projects to that list, similarly make lists for _Backend_, _Blockchain_, as per your need.
+- For example, make a list named _Frontend_ and add all your frontend projects to that list, similarly make lists for _Backend_, _Blockchain_, as per your need.
 - The `/github/all` endpoint will return all the lists and the repositories
 - ***Note***: You may need to change the code in order for it to work for you.
 ## Deployed Instance
