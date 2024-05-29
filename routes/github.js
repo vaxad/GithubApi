@@ -96,7 +96,7 @@ const getRepo = async(url) =>{
         const $ = cheerio.load(data)
         const content = $("div.repository-content div.Layout-sidebar div div div")
         const desc = $(content).children("p.f4.my-3").first().text().trim()
-        console.log(desc)
+        // console.log(desc)
         if(!desc){
             console.log("no desc", url)
         }
