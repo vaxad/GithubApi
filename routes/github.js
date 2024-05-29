@@ -6,7 +6,7 @@ const Projects = require('../models/Projects')
 const router = express.Router()
 
 const dbId = process.env.ID
-const username = process.env.USERNAME
+const username = process.env.GITHUB_USERNAME
 
 router.get('/repo/:name',async(req,res)=>{
     const name = req.params.name
@@ -38,28 +38,60 @@ router.get('/repo/:name',async(req,res)=>{
     }
 })
 
-// router.get('/all',async(req,res)=>{
-//     try {
-//         let projects;
-//         projects = await Projects.find()[0]
-//         if(!projects){
-//             projects = new Projects()
-//             await projects.save()
-//         }
-//         console.log(projects)
-//         const lastUpdated = projects.updated
-//         const newDate = new Date(lastUpdated.getTime() + (24 * 60 * 60 * 1000))
-//         const givenDate = Date.now()
-//         if(givenDate>newDate){
-//             projects.updated=Date.now()
-//             await projects.save()   
-//             store()
-//         }
-//         res.json({web:projects.web,server:projects.server,app:projects.app})
-//     } catch (error) {
-//         console.log(error)
-//     }
-// })
+router.get('/repo/:user/:name',async(req,res)=>{
+    const username = req.params.user
+    const name = req.params.name
+    console.log(name,username)
+    const url = `https://github.com/${username}/${name}`
+    try {
+        const {data} = await axios.get(url,{
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
+            }
+        })
+        const $ = cheerio.load(data)
+        const content = $("div.repository-content div.Layout-sidebar div div div")
+        console.log(content)
+        const desc = $(content).children("p.f4").text().trim()
+        const href =$(content).children("div.my-3.d-flex.flex-items-center").children("span").children("a").attr("href")
+        const readme = $("div.repository-content div div div.Layout div.Layout-main div.js-code-block-container div.Box-body")
+        const li = $(readme).children("article").children("p").children("a") 
+        const img =[]
+        li.each((idx,el)=>{
+            const i = $(el).children("img").attr("src")
+            img.push(i)
+        })
+        const id = $(readme).find("p").text().trim()
+        res.json({img:img,website:href,desc:desc,id:id})
+        
+    } catch (error) {
+        
+    }
+})
+
+router.get('/all',async(req,res)=>{
+    try {
+        let projects;
+        projects = await Projects.findOne()
+        console.log(projects)
+        if(!projects){
+            projects = new Projects()
+            await projects.save()
+        }
+        console.log(projects)
+        const lastUpdated = projects.updated
+        const newDate = new Date(lastUpdated.getTime() + (24 * 60 * 60 * 1000))
+        const givenDate = Date.now()
+        // if(givenDate>newDate){
+            projects.updated=Date.now()
+            await projects.save()   
+            store()
+        // }
+        res.json({web:projects.web,server:projects.server,app:projects.app})
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 router.get('/store',async(req,res)=>{
     try {
@@ -117,15 +149,14 @@ const getRepo = async(url) =>{
 const store=async()=>{
     try {
         console.log("store")   
-        const projectsArr=await Projects.find()
-        const projects = projectsArr[0]
+        const projects=await Projects.findOne()
         const web = await getweb()
         const server = await getserver()
         const app = await getapp()
         projects.web=web
         projects.server=server
         projects.app=app
-        const resp=await Projects.findByIdAndUpdate(projects._id,projects)
+        const resp=await projects.save()
         console.log(resp)
     } catch (error) {
         console.log(error)
@@ -143,7 +174,8 @@ function indexOfFirstAlphabet(str) {
   }
 
 const getweb = async() =>{
-    const url = 'https://github.com/stars/vaxad/lists/web'
+    console.log("fetching web repos for "+username)
+    const url = `https://github.com/stars/${username}/lists/web`
     try {
         const {data} = await axios.get(url,{
             headers: {
@@ -170,12 +202,13 @@ const getweb = async() =>{
         }
         return web
     } catch (error) {
-        console.log(error)
+        console.log("error in web")
     }
 }
 
 const getserver =async()=>{
-    const url = 'https://github.com/stars/vaxad/lists/server'
+    console.log("fetching server repos for "+username)
+    const url = `https://github.com/stars/${username}/lists/server`
     try {
         const {data} = await axios.get(url,{
             headers: {
@@ -201,12 +234,14 @@ const getserver =async()=>{
         }
         return server
     } catch (error) {
-        console.log(error)
+        console.warn("ERROR OCCURED: ")
+        console.log("error in server")
     }
 }
 
 const getapp = async()=>{
-    const url = 'https://github.com/stars/vaxad/lists/app'
+    console.log("fetching app repos for"+username)
+    const url = `https://github.com/stars/${username}/lists/app`
     try {
         const {data} = await axios.get(url,{
             headers: {
@@ -233,7 +268,7 @@ const getapp = async()=>{
         }
         return app
     } catch (error) {
-        console.log(error)
+        console.log("error in server")
     }
 }
 
