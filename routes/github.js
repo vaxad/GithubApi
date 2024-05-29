@@ -44,28 +44,10 @@ router.get('/repo/:user/:name',async(req,res)=>{
     console.log(name,username)
     const url = `https://github.com/${username}/${name}`
     try {
-        const {data} = await axios.get(url,{
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
-            }
-        })
-        const $ = cheerio.load(data)
-        const content = $("div.repository-content div.Layout-sidebar div div div")
-        console.log(content)
-        const desc = $(content).children("p.f4").text().trim()
-        const href =$(content).children("div.my-3.d-flex.flex-items-center").children("span").children("a").attr("href")
-        const readme = $("div.repository-content div div div.Layout div.Layout-main div.js-code-block-container div.Box-body")
-        const li = $(readme).children("article").children("p").children("a") 
-        const img =[]
-        li.each((idx,el)=>{
-            const i = $(el).children("img").attr("src")
-            img.push(i)
-        })
-        const id = $(readme).find("p").text().trim()
-        res.json({img:img,website:href,desc:desc,id:id})
-        
+        const data = await getRepo(url)
+        res.json(data)
     } catch (error) {
-        
+        console.log("ERROR IN FETCHING REPO")
     }
 })
 
@@ -102,7 +84,9 @@ router.get('/store',async(req,res)=>{
     }
 })
 
+
 const getRepo = async(url) =>{
+    console.log(url)
     try {
         const {data} = await axios.get(url,{
             headers: {
@@ -140,7 +124,7 @@ const getRepo = async(url) =>{
         return d
         
     } catch (error) {
-        console.log(error)
+        console.log("error in scraping")
     }
 }
 
